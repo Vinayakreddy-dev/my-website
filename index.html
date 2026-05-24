@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinayak Reddy | Offensive Security Operator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-dark: #050811;
+            --terminal-bg: rgba(7, 12, 26, 0.85);
+            --neon-green: #39ff14;
+            --neon-cyan: #00f0ff;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --border-glow: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Custom Hacking Crosshair Cursor */
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            cursor: crosshair;
+            background-image: 
+                linear-gradient(rgba(18, 24, 38, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(18, 24, 38, 0.4) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Matrix Rain Background Effect Simulation */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Live Matrix Status Ticker */
+        .status-ticker {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #000;
+            border-bottom: 1px solid var(--neon-green);
+            padding: 0.4rem 5%;
+            font-size: 0.8rem;
+            color: var(--neon-green);
+            display: flex;
+            justify-content: space-between;
+            z-index: 10000;
+            text-transform: uppercase;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 30px;
+            width: 100%;
+            background: rgba(5, 8, 17, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-glow);
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 5%;
+            z-index: 999;
+        }
+
+        .logo {
+            color: var(--neon-cyan);
+            font-weight: 700;
+            text-decoration: none;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
+        }
+
+        /* Layout Hub */
+        .container {
+            max-width: 1200px;
+            margin: 120px auto 60px;
+            padding: 0 2rem;
+        }
+
+        /* Core Terminal Interface Layout */
+        .terminal-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .terminal-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Terminal Window Deck */
+        .terminal-box {
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .terminal-box:hover {
+            border-color: var(--neon-cyan);
+        }
+
+        .terminal-header {
+            background: #0d1527;
+            padding: 0.7rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-r { background: #ff5f56; }
+        .dot-y { background: #ffbd2e; }
+        .dot-g { background: #27c93f; }
+
+        .terminal-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+        }
+
+        /* Profile Card Overhaul */
+        .profile-container {
+            text-align: center;
+        }
+
+        .avatar-frame {
+            position: relative;
+            width: 180px;
+            height: 220px;
+            margin: 0 auto 1.5rem;
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+            overflow: hidden;
+        }
+
+        /* Glitch scanline bar over photo */
+        .avatar-frame::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--neon-green);
+            opacity: 0.7;
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%) contrast(110%);
+        }
+
+        .alias {
+            color: var(--neon-green);
+            font-weight: bold;
+            font-size: 1.4rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .sys-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Interactive Elements & Technical Skill Badges */
+        .prompt-line {
+            color: var(--neon-green);
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .prompt-line::before {
+            content: "root@vinayak:~# ";
+            color: var(--neon-cyan);
+        }
+
+        .skills-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .skills-matrix { grid-template-columns: 1fr; }
+        }
+
+        .matrix-category {
+            border: 1px dashed var(--border-glow);
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .matrix-category h5 {
+            color: var(--neon-cyan);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .matrix-category ul {
+            list-style: none;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .matrix-category li::before {
+            content: "├─ ";
+            color: var(--neon-green);
+        }
+
+        /* Live Command Block */
+        .cmd-output {
+            color: var(--text-main);
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-left: 3px solid var(--neon-green);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Blinking Terminal Cursor Custom Element */
+        .blink-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: var(--neon-green);
+            animation: blink 1s steps(2, start) infinite;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            to { visibility: hidden; }
+        }
+
+        .social-nodes a {
+            display: inline-block;
+            margin: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border-glow);
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .social-nodes a:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-ticker">
+        <div><i class="fas fa-shield-halved"></i> SEC-OPERATOR LEVEL: VAPT_ENTRY</div>
+        <div>HOST: LOCALHOST // SECURE_NODE</div>
+        <div id="live-clock">TIME: 2026-05-24 00:00:00 UTC</div>
+    </div>
+
+    <nav>
+        <a href="#" class="logo">&lt;VR-INFOSYNC&gt;</a>
+        <div class="nav-links">
+            <a href="#console">Terminal Overview</a>
+            <a href="mailto:vinayakreddy9110299330@gmail.com">Contact Operator</a>
+        </div>
+    </nav>
+
+    <div class="container" id="console">
+        <div class="terminal-grid">
+            
+            <div class="terminal-box profile-container">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <div class="dot dot-r"></div>
+                        <div class="dot dot-y"></div>
+                        <div class="dot dot-g"></div>
+                    </div>
+                    <div class="terminal-title">identity_verification.sh</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="avatar-frame">
+                        <img src="profile.jpeg" alt="Vinayak Reddy Security Operator Portfolio Image">
+                    </div>
+                    <div class="alias">VINAYAKREDDY</div>
+                    <div class="sys-info">SYSTEM SECURITY AUDITOR</div>
+                    
+                    <div style="text-align: left; font-size: 0.8rem; border-top: 1px solid var(--border-glow); padding-top: 1rem;">
+                        <p><span style="color:var(--neon-cyan)">ORIGIN:</span> Bengaluru, IN</p>
+                        <p><span style="color:var(--neon-cyan)">ACADEMICS:</span> Bsc. Phys & Computer science</p>
+                        <p><span style="color:var(--neon-cyan)">SCORE:</span> 7.65 CGPA</p>
+                        <p><span style="color:var(--neon-cyan)">TARGET:</span> Defensive Alignment</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terminal-box">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <div class="dot dot-r"></div>
+                        <div class="dot dot-y"></div>
+                        <div class="dot dot-g"></div>
+                    </div>
+                    <div class="terminal-title">mainframe_vapt_core.cfg</div>
+                </div>
+                <div class="terminal-body">
+                    
+                    <div class="prompt-line">cat summary.log</div>
+                    <div class="cmd-output">
+                        Detail-oriented offensive security practitioner with verified hands-on VAPT experience via Texial structural loops. Highly proficient across automated testing architecture, infrastructure defense, and strategic vector mitigation alignments.
+                    </div>
+
+                    <div class="prompt-line">load_skills --matrix</div>
+                    <div class="skills-matrix">
+                        <div class="matrix-category">
+                            <h5>[0x01] Scanners & Assessment</h5>
+                            <ul>
+                                <li>Nessus / OpenVAS</li>
+                                <li>Nmap / Nikto</li>
+                                <li>Wireshark / TCPDump</li>
+                            </ul>
+                        </div>
+                        <div class="matrix-category">
+                            <h5>[0x02] Interception & Web</h5>
+                            <ul>
+                                <li>Burp Suite Pro</li>
+                                <li>OWASP ZAP / Caido</li>
+                                <li>Sqlmap Toolkit</li>
+                            </ul>
+                        </div>
+                        <div class="matrix-category">
+                            <h5>[0x03] Exploitation Architecture</h5>
+                            <ul>
+                                <li>Metasploit Framework</li>
+                                <li>Hydra Threat System</li>
+                                <li>Custom CTF Toolkits</li>
+                            </ul>
+                        </div>
+                        <div class="matrix-category">
+                            <h5>[0x04] Automation & Directives</h5>
+                            <ul>
+                                <li>BASH Scripting / Python</li>
+                                <li>MITRE ATT&CK Maps</li>
+                                <li>OWASP Top 10 Frameworks</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="prompt-line" style="margin-top:1.5rem;">check_credentials --active</div>
+                    <div class="cmd-output" style="border-left-color: var(--neon-cyan);">
+                        * TEXIAL INFORMATION SECURITY AUDITOR (TISA)<br>
+                        * CISCO: INTRODUCTION TO CYBERSECURITY
+                    </div>
+
+                    <div class="prompt-line">initiate_handshake --links</div>
+                    <div class="social-nodes">
+                        <a href="https://github.com/Vinayakreddy-dev" target="_blank"><i class="fab fa-github"></i> ACCESS GITHUB</a>
+                        <a href="mailto:vinayakreddy9110299330@gmail.com"><i class="fas fa-envelope"></i> DISPATCH MAIL</a>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                        system_node_online: awaiting command sequence<span class="blink-cursor"></span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+       <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function updateRealTimeClock() {
+                const clockElement = document.getElementById('live-clock');
+                if (!clockElement) return; // Prevents errors if element isn't ready
+                
+                const now = new Date();
+                
+                const year = now.getUTCFullYear();
+                const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(now.getUTCDate()).padStart(2, '0');
+                
+                const hours = String(now.getUTCHours()).padStart(2, '0');
+                const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+                const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+                
+                clockElement.innerHTML = TIME: ${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC;
+            }
+            
+            // Execute frame synchronization loop every 1000ms
+            setInterval(updateRealTimeClock, 1000);
+            updateRealTimeClock(); // Run immediately on load
+        });
+    </script>
+
+</body>
+</html>
